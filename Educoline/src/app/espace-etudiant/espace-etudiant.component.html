@@ -1,0 +1,110 @@
+<div class="container">
+    <h1 class="main-header">Portail Étudiant - Université </h1>
+  
+    <div class="courses-grid">
+      <div *ngFor="let course of courses" class="course-card">
+        <div class="course-header">
+          <img [src]="course.image" [alt]="course.name" class="course-thumbnail">
+          <div class="course-info">
+            <h2 class="course-title">{{ course.name }}</h2>
+            <p class="instructor">Enseignant: {{ course.instructor }}</p>
+          </div>
+        </div>
+        <div class="header">
+          <div class="search-bar">
+            <input type="text" placeholder="Rechercher...">
+            <button><i class="fas fa-search"></i></button>
+          </div>
+          
+          
+        </div>
+  
+        <div class="action-buttons">
+          <button 
+            class="btn course-btn"
+            (click)="showContent(course, 'course')"
+            [class.active]="isActive(course, 'course')">
+            <i class="fas fa-book-open"></i> Voir le cours
+          </button>
+          
+          <button 
+            class="btn results-btn"
+            (click)="showContent(course, 'notes')"
+            [class.active]="isActive(course, 'notes')">
+            <i class="fas fa-chart-bar"></i> Résultats
+          </button>
+        </div>
+  
+        <!-- Section Cours -->
+        <div 
+          class="content-section"
+          [id]="getSectionId(course.name, 'course')"
+          *ngIf="isActive(course, 'course')">
+          
+          <h3 class="section-title">{{ course.courseContent.title }}</h3>
+          
+          <div class="course-details">
+            <div class="chapters">
+              <h4>Chapitres :</h4>
+              <ul>
+                <li *ngFor="let chapter of course.courseContent.chapters">{{ chapter }}</li>
+              </ul>
+            </div>
+            
+            <div class="resources">
+              <h4>Ressources :</h4>
+              <div *ngFor="let resource of course.courseContent.resources" class="resource-item">
+                <i class="fas fa-file-pdf"></i>
+                <a href="#" class="resource-link">{{ resource }}</a>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Section Résultats -->
+        <div 
+          class="content-section"
+          [id]="getSectionId(course.name, 'notes')"
+          *ngIf="isActive(course, 'notes')">
+          
+          <h3 class="section-title">📊 Résultats - {{ course.name }}</h3>
+          
+          <div class="results-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Étudiant</th>
+                  <th>TP</th>
+                  <th>Examen</th>
+                  <th>Absences</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let note of course.notes">
+                  <td>{{ note.student }}</td>
+                  <td>{{ note.tp }}/20</td>
+                  <td>{{ note.exam }}/20</td>
+                  <td [class.warning]="note.absences > 3">{{ note.absences }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <div *ngIf="hasCriticalAbsences(course.notes)" class="absence-warning">
+              <i class="fas fa-exclamation-triangle"></i>
+              Seuil d'absences critique atteint !
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="header">
+      <div class="search-bar">
+        <input type="text" placeholder="Rechercher...">
+        <button><i class="fas fa-search"></i></button>
+      </div>
+      
+      <!-- Ajoutez ce bouton de déconnexion -->
+      <button class="logout-button" (click)="logout()">
+        <i class="fas fa-sign-out-alt"></i> Déconnexion
+      </button>
+    </div>
+  </div>

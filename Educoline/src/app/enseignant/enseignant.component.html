@@ -1,0 +1,96 @@
+<div *ngIf="!isDetailView" class="teachers-container">
+    <h2>Liste des enseignants</h2>
+    <div class="teacher-card" *ngFor="let enseignant of enseignants" (click)="afficherDetail(enseignant)">
+      <div class="teacher-info">
+        <h3 class="teacher-name">{{ enseignant.name }}</h3>
+        <p class="teacher-subject">{{ enseignant.subject }}</p>
+      </div>
+    </div>
+</div>
+<div class="header">
+  <div class="search-bar">
+    <input type="text" placeholder="Rechercher...">
+    <button><i class="fas fa-search"></i></button>
+  </div>
+  
+  <!-- Ajoutez ce bouton de déconnexion -->
+  <button class="logout-button" (click)="logout()">
+    <i class="fas fa-sign-out-alt"></i> Déconnexion
+  </button>
+</div>
+
+<div *ngIf="isDetailView && selectedEnseignant" class="teacher-detail-container">
+    <h2>Détail de l'enseignant</h2>
+    <div class="teacher-detail-card">
+      <div class="teacher-header">
+        <h3>{{ selectedEnseignant.name }}</h3>
+        <p class="teacher-email">{{ selectedEnseignant.email }}</p>
+        <p class="teacher-absences">Absences: {{ selectedEnseignant.absences }}</p>
+      </div>
+  
+      <div class="action-buttons">
+        <button class="btn-notes" (click)="showNotes()">Voir les Cours et Notes</button>
+        <button class="btn-absences" (click)="showAbsences()">Gérer les Absences</button>
+      </div>
+  
+      <div *ngIf="showNotesSection && selectedEnseignant.cours" class="section-container">
+        <h4>Cours: {{ selectedEnseignant.cours.name }}</h4>
+        <table class="grades-table">
+          <thead>
+            <tr>
+              <th>Étudiant</th>
+              <th>TP</th>
+              <th>Examen</th>
+              <th>Moyenne</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let student of selectedEnseignant.cours.students">
+              <td>{{ student.name }}</td>
+              <td class="grade-input">
+                <input [(ngModel)]="student.tp" type="number" placeholder="TP" min="0" max="20" />
+                <button class="btn-update" (click)="selectedEnseignant.cours && addTp(selectedEnseignant.cours, student, student.tp)">Modifier</button>
+              </td>
+              <td class="grade-input">
+                <input [(ngModel)]="student.exam" type="number" placeholder="Examen" min="0" max="20" />
+                <button class="btn-update" (click)="selectedEnseignant.cours && addExam(selectedEnseignant.cours, student, student.exam)">Modifier</button>
+              </td>
+              <td>{{ calculateAverage(student.tp, student.exam) | number:'1.2-2' }}</td>
+              <td>
+                <button class="btn-delete" (click)="selectedEnseignant.cours && removeStudent(selectedEnseignant.cours, student)">Supprimer</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  
+      <div *ngIf="showAbsenceSection && selectedEnseignant.cours" class="section-container">
+        <h4>Gestion des Absences</h4>
+        <table class="attendance-table">
+          <thead>
+            <tr>
+              <th>Étudiant</th>
+              <th>Absences</th>
+              <th>Présence</th>
+              <th>Absent</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let student of selectedEnseignant.cours.students">
+              <td>{{ student.name }}</td>
+              <td>{{ student.absences }}</td>
+              <td>
+                <button class="btn-present" (click)="markPresent(student)">Présent</button>
+              </td>
+              <td>
+                <button class="btn-absent" (click)="markAbsent(student)">Absent</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  
+      <button class="btn-back" (click)="retourListe()">Retour à la liste</button>
+    </div>
+</div>
